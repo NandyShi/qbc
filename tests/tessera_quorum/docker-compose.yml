@@ -66,6 +66,7 @@ services:
     image: consensys/quorum:latest
     container_name: quorum1
     ports:
+      - 23001:23000
       - 22001:22000
       - 21001:21000
     restart: always
@@ -80,6 +81,7 @@ services:
     <<: *quorum_tessera_node
     container_name: quorum2
     ports:
+      - 23002:23000
       - 22002:22000
       - 21002:21000
     networks:
@@ -93,6 +95,7 @@ services:
     <<: *quorum_tessera_node
     container_name: quorum3
     ports:
+      - 23003:23000
       - 22003:22000
       - 21003:21000
     networks:
@@ -106,6 +109,7 @@ services:
     <<: *quorum_tessera_node
     container_name: quorum4
     ports:
+      - 23004:23000
       - 22004:22000
       - 21004:21000
     networks:
