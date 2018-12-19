@@ -1,6 +1,84 @@
 # Setting up your own Quorum network
 
-## Set up the Quorum node network
+## Easy: Use a script to generate a network
+
+* Review, modify and run the script [`generate_network.sh`](./generate_network.sh)
+* You can jump to [this section](#Quorum-data-folder-structure) to continue setting up your network.
+
+## Intermediate: Set up the Quorum node network with Istanbul tools
+
+To create a network quickly, refer to the [Istanbul tools](https://github.com/getamis/istanbul-tools) guide.
+
+As part of the QbC tooling, we release and maintain our own version of Istanbul tools that you can leverage as a Docker container.
+
+Using the istanbul tool from Docker:
+
+`
+docker run -it consensys/istanbul-tools:latest /opt/istanbul --help
+`
+
+Outputs:
+```
+NAME:
+   istanbul - the istanbul-tools command line interface
+
+USAGE:
+   istanbul [global options] command [command options] [arguments...]
+
+VERSION:
+   v1.0.0
+
+COMMANDS:
+     extra    Istanbul extraData manipulation
+     setup    Setup your Istanbul network in seconds
+     reinit   Reinitialize a genesis block using previous node info
+     help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
+
+COPYRIGHT:
+   Copyright 2017 The AMIS Authors
+```
+
+Creating an IBFT-based network:
+
+IBFT networks use transaction extra data to encode the identity of the validator nodes.
+
+You can run `docker run -it consensys/istanbul-tools:latest /opt/istanbul setup --num 4 --nodes --verbose --quorum` to output to the terminal the files needed to set up the network.
+
+You can also run:
+
+```docker run -v `pwd`:/tmp/out -it consensys/istanbul-tools:latest bash -c "cd /tmp/out && /opt/istanbul setup --num 4 --nodes --verbose --quorum --save"```
+
+This mounts the current folder into the Docker container. Istanbul will output files and folders necessary for the network set up:
+
+```
+├── 0
+│   └── nodekey
+├── 1
+│   └── nodekey
+├── 2
+│   └── nodekey
+├── 3
+│   └── nodekey
+├── static-nodes.json
+└── genesis.json
+```
+
+The static-nodes.json file contains the list of the nodes created for the network as a list of enodes.
+
+* Copy each folder with a nodekey to a node. The nodekey file is the private key matching the identity (as in the enode) of the node.
+* Inspect static-nodes.json and replace `0.0.0.0` with the static IP associated with each node.
+* Copy static-nodes.json on each node as well.
+* Inspect genesis.json and make sure to [add additional accounts as needed](#Create-an-initial-account). Copy the genesis.json file to each node.
+* You can jump to [this section](#Quorum-data-folder-structure) to continue setting up your network.
+
+
+## Advanced: Set up the Quorum node network
+
+This is a detailed step by step guide to understand what items you will need to create to make up a Quorum network.
 
 ### Generate Enode and nodekey
 
@@ -89,7 +167,7 @@ Both files have the same format. Here is an example.
 
 Each enode URI is built with the public key of the node, associated with its host name and RPC port. The discport parameter is set to zero as no discovery is performed on the network.
 
-### Quorum. data folder structure
+## Quorum data folder structure
 
 Create the folders as follows:
 
